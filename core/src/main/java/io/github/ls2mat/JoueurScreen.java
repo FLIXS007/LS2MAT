@@ -129,49 +129,49 @@ public class JoueurScreen implements Screen {
                 }
                 break;
 
-//            case GAME_OVER:
-//                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-//                    game.setScreen(new DanseuseScreen(game));
-//                }
-//                if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-//                    game.setScreen(new MenuScreen(game));
-//                }
-//                // Détection clic souris pour les boutons de fin
-//                if (Gdx.input.justTouched()) {
-//                    int mouseX = Gdx.input.getX();
-//                    int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
-//
-//                    // Zone "Rejouer" (approximatif)
-//                    if (mouseY > 180 && mouseY < 220 && mouseX > 250 && mouseX < 450) {
-//                        game.setScreen(new DanseuseScreen(game));
-//                    }
-//                    // Zone "Menu" (approximatif)
-//                    if (mouseY > 140 && mouseY < 180 && mouseX > 240 && mouseX < 440) {
-//                        game.setScreen(new MenuScreen(game));
-//                    }
-//                }
-//                break;
+            case GAME_OVER:
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    game.setScreen(new DanseuseScreen(game));
+                }
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                    game.setScreen(new MenuScreen(game));
+                }
+                // Détection clic souris pour les boutons de fin
+                if (Gdx.input.justTouched()) {
+                    int mouseX = Gdx.input.getX();
+                    int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-//            case VICTOIRE:
-//                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-//                    game.setScreen(new DanseuseScreen(game));
-//                }
-//                if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-//                    game.setScreen(new MenuScreen(game));
-//                }
-//                // Détection clic pour victoire
-//                if (Gdx.input.justTouched()) {
-//                    int mouseX = Gdx.input.getX();
-//                    int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
-//
-//                    if (mouseY > 180 && mouseY < 220 && mouseX > 200 && mouseX < 500) {
-//                        game.setScreen(new DanseuseScreen(game));
-//                    }
-//                    if (mouseY > 140 && mouseY < 180 && mouseX > 240 && mouseX < 440) {
-//                        game.setScreen(new MenuScreen(game));
-//                    }
-//                }
-//                break;
+                    // Zone "Rejouer" (approximatif)
+                    if (mouseY > 180 && mouseY < 220 && mouseX > 250 && mouseX < 450) {
+                        game.setScreen(new DanseuseScreen(game));
+                    }
+                    // Zone "Menu" (approximatif)
+                    if (mouseY > 140 && mouseY < 180 && mouseX > 240 && mouseX < 440) {
+                        game.setScreen(new MenuScreen(game));
+                    }
+                }
+                break;
+
+            case VICTOIRE:
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    game.setScreen(new DanseuseScreen(game));
+                }
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                    game.setScreen(new MenuScreen(game));
+                }
+                // Détection clic pour victoire
+                if (Gdx.input.justTouched()) {
+                    int mouseX = Gdx.input.getX();
+                    int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+                    if (mouseY > 180 && mouseY < 220 && mouseX > 200 && mouseX < 500) {
+                        game.setScreen(new DanseuseScreen(game));
+                    }
+                    if (mouseY > 140 && mouseY < 180 && mouseX > 240 && mouseX < 440) {
+                        game.setScreen(new MenuScreen(game));
+                    }
+                }
+                break;
         }
 
         // Dessin
@@ -272,18 +272,6 @@ public class JoueurScreen implements Screen {
             case ATTENTE_INPUT:
                 font.draw(batch, "Mouvement " + (indexReponse + 1) + "/" + sequenceAReproduire.length, 10, 580);
                 font.draw(batch, "Score: " + score, 10, 540);
-
-                String seq = "Séquence: ";
-                for (int i = 0; i < sequenceAReproduire.length; i++) {
-                    if (i < indexReponse) {
-                        seq += "✓ ";
-                    } else if (i == indexReponse) {
-                        seq += "[" + noms[sequenceAReproduire[i]] + "] ";
-                    } else {
-                        seq += "? ";
-                    }
-                }
-                font.draw(batch, seq, 10, 500);
                 break;
 
             case JOUE_ANIMATION:
