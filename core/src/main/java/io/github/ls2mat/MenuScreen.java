@@ -1,114 +1,103 @@
 package io.github.ls2mat;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input; // Import important pour les touches
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-/** First screen of the application. Displayed after the application is created. */
 public class MenuScreen implements Screen {
-    private Main game ;
-    private SpriteBatch batch ;
-    private Texture textureSheet;
-    private Texture textureBoutonPlay;
-    private Texture textureBoutonScore;
-    private Texture textureBoutonSettings;
-    private Texture textureBoutonExit;
+
+    private Main game;
+    private SpriteBatch batch;
+
+    // Textures
+
+    private Texture textureMapFlou;
+    private Texture textureBoutons4;
+    private Texture textureLogo;
+    private Texture textureMenuSettings;
     private Texture textureBoutonMute;
     private Texture textureBoutonSon;
     private Texture textureBarreSelect;
+    private Texture textureBoutonSelect;
+
+    // Conditions d'affichage
+
+    private boolean showSettings = false;
+    private boolean showScore = false;
+
     public MenuScreen(Main game){
         this.game = game;
     }
 
-
     @Override
     public void show() {
-        // Prepare your screen here
         batch = new SpriteBatch();
-
-        textureSheet = new Texture("MenuFond.png");
-        textureBoutonPlay = new Texture("BoutonPlay.png");
-        textureBoutonScore = new Texture("BoutonScore.png");
-        textureBoutonSettings = new Texture("BoutonSettings.png");
-        textureBoutonExit = new Texture("BoutonExit.png");
+        textureBoutons4 = new Texture("Boutons4.png");
+        textureMapFlou= new Texture("MenuFond.png");
         textureBoutonMute = new Texture("BoutonMute.png");
         textureBoutonSon = new Texture("BoutonSon.png");
         textureBarreSelect = new Texture("BarreSelect.png");
-
+        textureBoutonSelect = new Texture("BoutonSelect.png");
+        textureLogo = new Texture("LogoMOVE'IT.png");
+        textureMenuSettings = new Texture("MenuSettings.png");
     }
 
     @Override
     public void render(float delta) {
-        // Draw your screen here. "delta" is the time since last render in seconds.
-        // Effacer l'écran (couleur noire)
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
+            showSettings = !showSettings;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+            Gdx.app.exit();
+        }
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Dessiner
         batch.begin();
 
-        // Afficher la map en arrière-plan (remplit tout l'écran)
-        batch.draw(textureSheet, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(textureMapFlou, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        batch.draw(textureBoutonPlay, 200, 200, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        // -- GESTION DE L'AFFICHAGE DES SETTINGS --
 
-        /**batch.draw(textureBoutonScore, 300, 300, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        if (showSettings) {
 
-        batch.draw(textureBoutonSettings, 300, 300, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            batch.draw(textureMenuSettings, 725, 300, 1000, 1000);
 
-        batch.draw(textureBoutonSon, 300, 300, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            // Ajout des prochains boutons.
 
-        batch.draw(textureBoutonMute, 300, 300, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        batch.draw(textureBarreSelect, 300, 300, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        batch.draw(textureBoutonExit, 300, 300, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());**/
-
-        if(Gdx.input.isKeyPressed(65)){
-            Gdx.app.exit();
-            batch.draw(textureBoutonScore, 500, 300, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        } else {
+            batch.draw(textureBoutons4, 950, 100, 650, 650);
+            batch.draw(textureLogo, 725, 800, 1100, 650);
         }
-
-
-
-
-        // Afficher les autres textures quand tu les auras
-        // batch.draw(textureDance, 100, 100);
-        // batch.draw(textureDanceuse, 200, 200);
 
         batch.end();
     }
 
     @Override
-    public void resize(int width, int height) {
-        // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-        // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
-        if(width <= 0 || height <= 0) return;
-
-        // Resize your screen here. The parameters represent the new window size.
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-        // Invoked when your application is paused.
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-        // Invoked when your application is resumed after pause.
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-        // This method is called when another screen replaces this one.
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
-        // Destroy screen's assets here.
         batch.dispose();
-        textureSheet.dispose();
+        textureMapFlou.dispose();
+        textureBoutons4.dispose();
+        textureLogo.dispose();
+        textureMenuSettings.dispose();
+        // N'oublie pas de dispose toutes les textures utilisées
     }
 }
