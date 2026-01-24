@@ -129,12 +129,12 @@ public class DanseuseScreen implements Screen {
                 }
                 break;
 
-//            case TERMINE:
-//                // Attendre 1 seconde puis changer d'écran
-//                if (timerDanse >= 1.0f) {
-//                    game.setScreen(new JoueurScreen(game, sequenceDanses));
-//                }
-//                break;
+            case TERMINE:
+                // Attendre 1 seconde puis changer d'écran
+                if (timerDanse >= 1.0f) {
+                    game.setScreen(new JoueurScreen(game, sequenceDanses));
+                }
+                break;
         }
 
         // Dessin
@@ -147,14 +147,14 @@ public class DanseuseScreen implements Screen {
         if (etatActuel == Etat.DANSE) {
             // Animation
             int danse = sequenceDanses[indexDanseActuelle];
-            tabDanseuse[danse].draw(batch, 250, 200, 100, 300);
+            tabDanseuse[danse].draw(batch, 750, 450, 300, 675);
         } else {
             // Pose d'attente
-            batch.draw(textureDanceuse, 250, 300, 130, 130);
+            batch.draw(textureDanceuse, 750, 675, 390, 273);
         }
 
         // Joueur
-        batch.draw(textureJoueur, 220, 80, 200, 200);
+        batch.draw(textureJoueur, 660, 180, 600, 440);
 
         batch.end();
     }
