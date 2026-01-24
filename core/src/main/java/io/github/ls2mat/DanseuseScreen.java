@@ -17,17 +17,14 @@ public class DanseuseScreen implements Screen {
 
     private Animator[] tabDanseuse;
 
-    // Séquence aléatoire générée
     private int[] sequenceDanses;
     private int indexDanseActuelle = 0;
-    private int nombreDanses = 4; // Nombre de danses dans la séquence
+    private int nombreDanses = 4;
 
-    // Timer
     private float timerDanse = 0f;
     private float DUREE_DANSE = 2.0f;
     private float DUREE_PAUSE = 1.0f;
 
-    // États
     private enum Etat { PAUSE, DANSE, TERMINE }
     private Etat etatActuel = Etat.PAUSE;
 
@@ -38,9 +35,7 @@ public class DanseuseScreen implements Screen {
         this.tabDanseuse = new Animator[4];
         this.sequenceDanses = new int[nombreDanses];
 
-        // Générer séquence aléatoire
         genererSequenceAleatoire();
-
         importDance();
 
         System.out.println("=== SÉQUENCE GÉNÉRÉE ===");
@@ -49,7 +44,7 @@ public class DanseuseScreen implements Screen {
 
     private void genererSequenceAleatoire() {
         for (int i = 0; i < nombreDanses; i++) {
-            sequenceDanses[i] = rand.nextInt(4); // 0 à 3
+            sequenceDanses[i] = rand.nextInt(4);
         }
     }
 
@@ -80,6 +75,8 @@ public class DanseuseScreen implements Screen {
         textureGame = new Texture("maps/Map.png");
         textureDanceuse = new Texture("dance/danseuse/defaut.png");
         textureJoueur = new Texture("dance/joueur/defaut.png");
+
+        AudioManager.getInstance().jouerDanseusMusic();
     }
 
     @Override
@@ -87,18 +84,14 @@ public class DanseuseScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Incrémenter le timer
         timerDanse += delta;
 
-        // Machine à états
         switch (etatActuel) {
             case PAUSE:
-                // Pause avant la danse
                 if (timerDanse >= DUREE_PAUSE) {
                     etatActuel = Etat.DANSE;
                     timerDanse = 0f;
 
-                    // Réinitialiser l'animation
                     int danse = sequenceDanses[indexDanseActuelle];
                     tabDanseuse[danse].reset();
 
@@ -108,7 +101,6 @@ public class DanseuseScreen implements Screen {
                 break;
 
             case DANSE:
-                // Jouer la danse
                 int danse = sequenceDanses[indexDanseActuelle];
                 tabDanseuse[danse].update(delta);
 
@@ -116,44 +108,33 @@ public class DanseuseScreen implements Screen {
                     indexDanseActuelle++;
                     timerDanse = 0f;
 
-                    // Vérifier si on a fini
                     if (indexDanseActuelle >= nombreDanses) {
                         etatActuel = Etat.TERMINE;
                         System.out.println("✓ Séquence terminée ! À toi de jouer !");
-
-                        // Aller au tour du joueur après 1 seconde
                     } else {
-                        // Retour en pause pour la prochaine danse
                         etatActuel = Etat.PAUSE;
                     }
                 }
                 break;
 
             case TERMINE:
-                // Attendre 1 seconde puis changer d'écran
                 if (timerDanse >= 1.0f) {
                     game.setScreen(new JoueurScreen(game, sequenceDanses));
                 }
                 break;
         }
 
-        // Dessin
         batch.begin();
 
-        // Map
         batch.draw(textureGame, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // Danseuse
         if (etatActuel == Etat.DANSE) {
-            // Animation
             int danse = sequenceDanses[indexDanseActuelle];
             tabDanseuse[danse].draw(batch, 800, 470, 300, 675);
         } else {
-            // Pose d'attente
             batch.draw(textureDanceuse, 750, 675, 390, 273);
         }
 
-        // Joueur
         batch.draw(textureJoueur, 660, 180, 600, 440);
 
         batch.end();

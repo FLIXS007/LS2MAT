@@ -88,10 +88,10 @@ public class JoueurScreen implements Screen {
         textureJoueur = new Texture("dance/joueur/defaut.png");
 
         // Charger les boutons (images des danses)
-        btnFloss = new Texture("dance/icone/floss.png");
-        btnGangnam = new Texture("dance/icone/gangnamStyle.png");
-        btnMacarena = new Texture("dance/icone/macarena.png");
-        btnRobot = new Texture("dance/icone/robot.png");
+        btnFloss = new Texture("dance/joueur/floss.png");
+        btnGangnam = new Texture("dance/joueur/gangnamStyle.png");
+        btnMacarena = new Texture("dance/joueur/macarena.png");
+        btnRobot = new Texture("dance/joueur/robot.png");
 
         // Positionner les boutons en bas de l'écran
         float btnWidth = 120;
@@ -107,6 +107,8 @@ public class JoueurScreen implements Screen {
         btnGangnamRect = new Rectangle(startX + btnWidth + spacing, btnY, btnWidth, btnHeight);
         btnMacarenaRect = new Rectangle(startX + (btnWidth + spacing) * 2, btnY, btnWidth, btnHeight);
         btnRobotRect = new Rectangle(startX + (btnWidth + spacing) * 3, btnY, btnWidth, btnHeight);
+
+        AudioManager.getInstance().jouerJoueurMusic();
     }
 
     @Override
@@ -224,7 +226,7 @@ public class JoueurScreen implements Screen {
         // Détection du clic
         if (Gdx.input.justTouched()) {
             int mouseX = Gdx.input.getX();
-            int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY(); // Inverser Y
+            int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
             int tentative = -1;
 
