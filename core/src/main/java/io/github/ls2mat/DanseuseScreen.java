@@ -147,7 +147,7 @@ public class DanseuseScreen implements Screen {
         if (etatActuel == Etat.DANSE) {
             // Animation
             int danse = sequenceDanses[indexDanseActuelle];
-            tabDanseuse[danse].draw(batch, 750, 450, 300, 675);
+            tabDanseuse[danse].draw(batch, 800, 470, 300, 675);
         } else {
             // Pose d'attente
             batch.draw(textureDanceuse, 750, 675, 390, 273);

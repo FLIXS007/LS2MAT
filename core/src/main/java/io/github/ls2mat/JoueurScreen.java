@@ -88,18 +88,20 @@ public class JoueurScreen implements Screen {
         textureJoueur = new Texture("dance/joueur/defaut.png");
 
         // Charger les boutons (images des danses)
-        btnFloss = new Texture("dance/joueur/floss.png");
-        btnGangnam = new Texture("dance/joueur/gangnamStyle.png");
-        btnMacarena = new Texture("dance/joueur/macarena.png");
-        btnRobot = new Texture("dance/joueur/robot.png");
+        btnFloss = new Texture("dance/icone/floss.png");
+        btnGangnam = new Texture("dance/icone/gangnamStyle.png");
+        btnMacarena = new Texture("dance/icone/macarena.png");
+        btnRobot = new Texture("dance/icone/robot.png");
 
         // Positionner les boutons en bas de l'écran
         float btnWidth = 120;
         float btnHeight = 120;
-        float btnY = 20;
+
+        float btnY = 180;
         float spacing = 20;
         float totalWidth = (btnWidth * 4) + (spacing * 3);
         float startX = (Gdx.graphics.getWidth() - totalWidth) / 2;
+
 
         btnFlossRect = new Rectangle(startX, btnY, btnWidth, btnHeight);
         btnGangnamRect = new Rectangle(startX + btnWidth + spacing, btnY, btnWidth, btnHeight);
