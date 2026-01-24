@@ -65,6 +65,11 @@ public class MenuScreen implements Screen {
     float btnExitMenuW = 400;
     float btnExitMenuH = 100;
 
+    float btnPlayX = 775;
+    float btnPlayY = 100;
+    float btnPlayW = 400;
+    float btnPlayH = 400;
+
     public MenuScreen(Main game){
         this.game = game;
     }
@@ -134,7 +139,9 @@ public class MenuScreen implements Screen {
                     Gdx.app.exit();
                 }
 
-                // Le bouton PLAY sera géré plus tard
+                if (isTextureClicked(btnPlayX, btnPlayY, btnPlayW, btnPlayH, mouseX, mouseY)) {
+                    game.setScreen(new DanseuseScreen(game));
+                }
             }
         }
 
