@@ -21,7 +21,7 @@ public class DanseuseScreen implements Screen {
     private int numdance;
     private boolean pdance = false;
 
-    public GameScreen(Main game){
+    public DanseuseScreen(Main game, int []RandomDancs){
         this.game = game ;
         this.tabDanseuse = new Animator[4];
         this.tabJoueur = new  Animator[4];
