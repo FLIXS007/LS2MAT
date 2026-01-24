@@ -12,9 +12,8 @@ public class MenuScreen implements Screen {
     private Main game;
     private SpriteBatch batch;
 
-    // --- TEXTURES ---
     private Texture textureMapFlou;
-    private Texture textureBoutons4; // Contient les 4 boutons (Jouer, Settings, etc.)
+    private Texture textureBoutons4;
     private Texture textureLogo;
     private Texture textureMenuSettings;
     private Texture textureBoutonMute;
@@ -23,43 +22,34 @@ public class MenuScreen implements Screen {
     private Texture textureBoutonPlus;
     private Texture textureBoutonMoins;
 
-    // --- ÉTATS D'AFFICHAGE ---
     private boolean showSettings = false;
     private boolean isMuted = false;
 
-    // --- POSITIONS / HITBOXES ---
-
-    // Position du bouton SON (Mute/unMute) dans Settings
     float btnSonX = 600;
     float btnSonY = 600;
     float btnSonW = 400;
     float btnSonH = 400;
 
-    // Position du bouton PLUS (volume)
     float btnPlusX = 800;
     float btnPlusY = 600;
     float btnPlusW = 400;
     float btnPlusH = 400;
 
-    // Position du bouton MOINS (volume)
     float btnMoinsX = 1000;
     float btnMoinsY = 600;
     float btnMoinsW = 400;
     float btnMoinsH = 400;
 
-    // Position du bouton SETTINGS dans le menu principal
     float btnOuvrirSettingsX = 775;
     float btnOuvrirSettingsY = 25;
     float btnOuvrirSettingsW = 400;
     float btnOuvrirSettingsH = 400;
 
-    // Position du bouton BACK (retour depuis Settings)
     float btnBackX = 300;
     float btnBackY = 600;
     float btnBackW = 400;
     float btnBackH = 400;
 
-    // Position du bouton EXIT (quitter le jeu) du Menu principal
     float btnExitMenuX = 775;
     float btnExitMenuY = 100;
     float btnExitMenuW = 400;
@@ -86,55 +76,44 @@ public class MenuScreen implements Screen {
         textureBoutonBack = new Texture("BoutonBack.png");
         textureBoutonPlus = new Texture("BoutonPlus.png");
         textureBoutonMoins = new Texture("BoutonMoins.png");
+
+        AudioManager.getInstance().jouerMenuMusic();
     }
 
     @Override
     public void render(float delta) {
 
-        // --- GESTION DES ENTRÉES ---
-
-        // Touche ESC pour quitter le jeu
         if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
             Gdx.app.exit();
         }
 
-        // Clic Gauche de la souris
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
 
-            // Calculer la position de la souris (inversée en Y pour LibGDX)
             float mouseX = Gdx.input.getX();
             float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-            // --- Si le menu SETTINGS est ouvert ---
             if (showSettings) {
 
-                // Clic sur le bouton Mute/Son
                 if (isTextureClicked(btnSonX, btnSonY, btnSonW, btnSonH, mouseX, mouseY)) {
                     isMuted = !isMuted;
                 }
 
-                // Clic sur le bouton PLUS (augmenter volume)
                 if (!isMuted && isTextureClicked(btnPlusX, btnPlusY, btnPlusW, btnPlusH, mouseX, mouseY)) {
                 }
 
-                // Clic sur le bouton MOINS (diminuer volume)
                 if (!isMuted && isTextureClicked(btnMoinsX, btnMoinsY, btnMoinsW, btnMoinsH, mouseX, mouseY)) {
                 }
 
-                // Clic pour FERMER les settings (bouton BACK)
                 if (isTextureClicked(btnBackX, btnBackY, btnBackW, btnBackH, mouseX, mouseY)) {
                     showSettings = false;
                 }
             }
-            // --- MENU PRINCIPAL ---
             else {
 
-                // Ouvrir les SETTINGS
                 if (isTextureClicked(btnOuvrirSettingsX, btnOuvrirSettingsY, btnOuvrirSettingsW, btnOuvrirSettingsH, mouseX, mouseY)) {
                     showSettings = true;
                 }
 
-                // Bouton EXIT (quitter le jeu)
                 if (isTextureClicked(btnExitMenuX, btnExitMenuY, btnExitMenuW, btnExitMenuH, mouseX, mouseY)) {
                     Gdx.app.exit();
                 }
@@ -145,22 +124,17 @@ public class MenuScreen implements Screen {
             }
         }
 
-        // --- DESSIN (AFFICHAGE) ---
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
 
-        // Fond (toujours affiché)
         batch.draw(textureMapFlou, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         if (showSettings) {
-            // --- AFFICHER LE MENU SETTINGS ---
             batch.draw(textureMenuSettings, 810, 390, 500, 400);
             batch.draw(textureBoutonBack, btnBackX, btnBackY, btnBackW, btnBackH);
 
-            // Bouton Son
             if (isMuted) {
                 batch.draw(textureBoutonMute, btnSonX, btnSonY, btnSonW, btnSonH);
             }
@@ -171,16 +145,12 @@ public class MenuScreen implements Screen {
             }
         }
         else {
-            // --- AFFICHER LE MENU PRINCIPAL ---
             batch.draw(textureBoutons4, 775, 100, 400, 400);
             batch.draw(textureLogo, 520, 475, 900, 650);
         }
         batch.end();
     }
 
-    /**
-     * Méthode utilitaire pour vérifier si un clic (mouseX, mouseY) est dans un rectangle (x, y, w, h)
-     */
     private boolean isTextureClicked(float x, float y, float w, float h, float mouseX, float mouseY) {
         return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
     }

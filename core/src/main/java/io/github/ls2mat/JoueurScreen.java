@@ -20,31 +20,25 @@ public class JoueurScreen implements Screen {
 
     private Animator[] tabJoueur;
 
-    // Textures des boutons
     private Texture btnFloss;
     private Texture btnGangnam;
     private Texture btnMacarena;
     private Texture btnRobot;
 
-    // Zones cliquables des boutons
     private Rectangle btnFlossRect;
     private Rectangle btnGangnamRect;
     private Rectangle btnMacarenaRect;
     private Rectangle btnRobotRect;
 
-    // Séquence à reproduire
     private int[] sequenceAReproduire;
     private int indexReponse = 0;
 
-    // Timer pour l'animation
     private float timerAnimation = 0f;
     private float DUREE_ANIMATION = 2.0f;
 
-    // États
     private enum Etat { ATTENTE_INPUT, JOUE_ANIMATION, GAME_OVER, VICTOIRE }
     private Etat etatActuel = Etat.ATTENTE_INPUT;
 
-    // Score
     private int score = 0;
     private String messageErreur = "";
 
@@ -87,13 +81,11 @@ public class JoueurScreen implements Screen {
         textureDanceuse = new Texture("dance/danseuse/defaut.png");
         textureJoueur = new Texture("dance/joueur/defaut.png");
 
-        // Charger les boutons (images des danses)
         btnFloss = new Texture("dance/joueur/floss.png");
         btnGangnam = new Texture("dance/joueur/gangnamStyle.png");
         btnMacarena = new Texture("dance/joueur/macarena.png");
         btnRobot = new Texture("dance/joueur/robot.png");
 
-        // Positionner les boutons en bas de l'écran
         float btnWidth = 120;
         float btnHeight = 120;
         float btnY = 20;
@@ -105,6 +97,8 @@ public class JoueurScreen implements Screen {
         btnGangnamRect = new Rectangle(startX + btnWidth + spacing, btnY, btnWidth, btnHeight);
         btnMacarenaRect = new Rectangle(startX + (btnWidth + spacing) * 2, btnY, btnWidth, btnHeight);
         btnRobotRect = new Rectangle(startX + (btnWidth + spacing) * 3, btnY, btnWidth, btnHeight);
+
+        AudioManager.getInstance().jouerJoueurMusic();
     }
 
     @Override
@@ -112,7 +106,6 @@ public class JoueurScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Gestion des états
         switch (etatActuel) {
             case ATTENTE_INPUT:
                 gererInput();
@@ -136,16 +129,13 @@ public class JoueurScreen implements Screen {
                 if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
                     game.setScreen(new MenuScreen(game));
                 }
-                // Détection clic souris pour les boutons de fin
                 if (Gdx.input.justTouched()) {
                     int mouseX = Gdx.input.getX();
                     int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-                    // Zone "Rejouer" (approximatif)
                     if (mouseY > 180 && mouseY < 220 && mouseX > 250 && mouseX < 450) {
                         game.setScreen(new DanseuseScreen(game));
                     }
-                    // Zone "Menu" (approximatif)
                     if (mouseY > 140 && mouseY < 180 && mouseX > 240 && mouseX < 440) {
                         game.setScreen(new MenuScreen(game));
                     }
@@ -159,7 +149,6 @@ public class JoueurScreen implements Screen {
                 if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
                     game.setScreen(new MenuScreen(game));
                 }
-                // Détection clic pour victoire
                 if (Gdx.input.justTouched()) {
                     int mouseX = Gdx.input.getX();
                     int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
@@ -174,16 +163,11 @@ public class JoueurScreen implements Screen {
                 break;
         }
 
-        // Dessin
         batch.begin();
 
-        // Map
         batch.draw(textureGame, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        // Danseuse (immobile)
         batch.draw(textureDanceuse, 750, 675, 390, 273);
 
-        // Joueur
         if (etatActuel == Etat.JOUE_ANIMATION) {
             int danseActuelle = sequenceAReproduire[indexReponse - 1];
             tabJoueur[danseActuelle].draw(batch, 760, 130, 260, 520);
@@ -191,25 +175,21 @@ public class JoueurScreen implements Screen {
             batch.draw(textureJoueur, 660, 180, 600, 440);
         }
 
-        // Boutons de danse (seulement si on attend l'input)
         if (etatActuel == Etat.ATTENTE_INPUT) {
             dessinerBoutons();
         }
 
-        // Interface texte
         afficherUI();
 
         batch.end();
     }
 
     private void dessinerBoutons() {
-        // Dessiner les 4 boutons
         batch.draw(btnFloss, btnFlossRect.x, btnFlossRect.y, btnFlossRect.width, btnFlossRect.height);
         batch.draw(btnGangnam, btnGangnamRect.x, btnGangnamRect.y, btnGangnamRect.width, btnGangnamRect.height);
         batch.draw(btnMacarena, btnMacarenaRect.x, btnMacarenaRect.y, btnMacarenaRect.width, btnMacarenaRect.height);
         batch.draw(btnRobot, btnRobotRect.x, btnRobotRect.y, btnRobotRect.width, btnRobotRect.height);
 
-        // Labels des boutons
         font.getData().setScale(1);
         font.draw(batch, "Floss", btnFlossRect.x + 30, btnFlossRect.y - 5);
         font.draw(batch, "Gangnam", btnGangnamRect.x + 10, btnGangnamRect.y - 5);
@@ -219,10 +199,9 @@ public class JoueurScreen implements Screen {
     }
 
     private void gererInput() {
-        // Détection du clic
         if (Gdx.input.justTouched()) {
             int mouseX = Gdx.input.getX();
-            int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY(); // Inverser Y
+            int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
             int tentative = -1;
 
