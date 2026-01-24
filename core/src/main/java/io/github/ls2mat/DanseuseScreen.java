@@ -5,24 +5,28 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.ls2mat.Dance.Dance;
-import io.github.ls2mat.Dance.TypeDanse;
+
 
 /** First screen of the application. Displayed after the application is created. */
-public class GameScreen implements Screen {
+public class DanseuseScreen implements Screen {
     private Main game ;
     private SpriteBatch batch ;
     private Texture textureGame;
     private Texture textureJoueur ;
     private Texture textureDanceuse ;
-    private Dance dance;
     private Animator[] tabDanseuse;
     private Animator[] tabJoueur;
+    private float tempsEcoule = 0 ;
+    private int[] RandomDancs ;
+    private int numdance;
+    private boolean pdance = false;
 
     public GameScreen(Main game){
         this.game = game ;
         this.tabDanseuse = new Animator[4];
         this.tabJoueur = new  Animator[4];
+        this.RandomDancs = RandomDancs;
+        this.numdance = 0;
         importDance();
     }
 
@@ -33,7 +37,7 @@ public class GameScreen implements Screen {
         tabDanseuse[3] = new Animator("danseuse/robot.png");
 
         tabJoueur[0] = new Animator("joueur/floss.png");
-        tabJoueur[1] = new Animator("joueur/gangnamStyle.png");
+       // tabJoueur[1] = new Animator("joueur/gangnamStyle.png");
         tabJoueur[2] = new Animator("joueur/macarena.png");
         tabJoueur[3] = new Animator("joueur/robot.png");
     }
@@ -59,21 +63,36 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        tabDanseuse[1].update(delta);
-        tabJoueur[1].update(delta);
-        // Dessiner
-        batch.begin();
-
-        // Afficher la map en arrière-plan (remplit tout l'écran)
-        batch.draw(textureGame, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        //batch.draw(textureDanceuse,250,300,130,130);
-       // batch.draw(textureJoueur,220,80,200,200);
-        tabDanseuse[1].draw(batch,250,200,100,300);
-        tabJoueur[1].draw(batch,220,10,100,300);
-        // Afficher les autres textures quand tu les auras
+        tempsEcoule+=delta;
+        int dance = this.RandomDancs[numdance];
+        tabDanseuse[dance].update(delta);
 
 
-        batch.end();
+        if(tempsEcoule > 1f ){
+            pdance = true;
+        }
+
+
+        if (pdance){
+            batch.begin();
+            // Afficher la map en arrière-plan (remplit tout l'écran)
+            batch.draw(textureGame, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            tabDanseuse[dance].draw(batch,250,200,100,300);
+            batch.draw(textureJoueur,220,80,200,200);
+            // Afficher les autres textures quand tu les auras
+            batch.end();
+        }
+        else {
+            batch.begin();
+            batch.draw(textureGame, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            batch.draw(textureDanceuse,250,300,130,130);
+            batch.draw(textureJoueur,220,80,200,200);
+            batch.end();
+        }
+
+        if(tempsEcoule%2 == 0 ){
+            this.numdance++;
+        }
 
 
     }

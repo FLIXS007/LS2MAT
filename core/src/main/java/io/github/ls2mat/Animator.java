@@ -16,7 +16,7 @@ public class Animator {
     public Animator(String fichier) {
         // Charger la texture
         this.walkSheet = new Texture(Gdx.files.internal("dance/" + fichier));
-        this.stateTime = 0.33f;
+        this.stateTime = 0f;
 
         // Découper en frames
         TextureRegion[][] tmp = TextureRegion.split(
@@ -35,7 +35,7 @@ public class Animator {
         }
 
         // Créer l'animation (0.15f = vitesse)
-        walkAnimation = new Animation<>(0.15f, walkFrames);
+        walkAnimation = new Animation<>(0.25f, walkFrames);
     }
 
     /**
