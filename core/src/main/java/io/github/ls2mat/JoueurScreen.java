@@ -7,8 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
-import java.util.Random;
+import com.badlogic.gdx.math.Rectangle;
 
 public class JoueurScreen implements Screen {
     private Main game;
@@ -21,9 +20,21 @@ public class JoueurScreen implements Screen {
 
     private Animator[] tabJoueur;
 
+    // Textures des boutons
+    private Texture btnFloss;
+    private Texture btnGangnam;
+    private Texture btnMacarena;
+    private Texture btnRobot;
+
+    // Zones cliquables des boutons
+    private Rectangle btnFlossRect;
+    private Rectangle btnGangnamRect;
+    private Rectangle btnMacarenaRect;
+    private Rectangle btnRobotRect;
+
     // Séquence à reproduire
     private int[] sequenceAReproduire;
-    private int indexReponse = 0; // Où on en est dans la reproduction
+    private int indexReponse = 0;
 
     // Timer pour l'animation
     private float timerAnimation = 0f;
@@ -46,7 +57,7 @@ public class JoueurScreen implements Screen {
 
         System.out.println("=== TOUR DU JOUEUR ===");
         afficherSequence();
-        System.out.println("Utilise les touches : 1=Floss, 2=Gangnam, 3=Macarena, 4=Robot");
+        System.out.println("Clique sur les boutons pour reproduire la séquence !");
     }
 
     private void afficherSequence() {
@@ -70,11 +81,30 @@ public class JoueurScreen implements Screen {
     public void show() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        font.getData().setScale(2); // Texte plus gros
+        font.getData().setScale(2);
 
         textureGame = new Texture("maps/Map.png");
         textureDanceuse = new Texture("dance/danseuse/defaut.png");
         textureJoueur = new Texture("dance/joueur/defaut.png");
+
+        // Charger les boutons (images des danses)
+        btnFloss = new Texture("dance/joueur/floss.png");
+        btnGangnam = new Texture("dance/joueur/gangnamStyle.png");
+        btnMacarena = new Texture("dance/joueur/macarena.png");
+        btnRobot = new Texture("dance/joueur/robot.png");
+
+        // Positionner les boutons en bas de l'écran
+        float btnWidth = 120;
+        float btnHeight = 120;
+        float btnY = 20;
+        float spacing = 20;
+        float totalWidth = (btnWidth * 4) + (spacing * 3);
+        float startX = (Gdx.graphics.getWidth() - totalWidth) / 2;
+
+        btnFlossRect = new Rectangle(startX, btnY, btnWidth, btnHeight);
+        btnGangnamRect = new Rectangle(startX + btnWidth + spacing, btnY, btnWidth, btnHeight);
+        btnMacarenaRect = new Rectangle(startX + (btnWidth + spacing) * 2, btnY, btnWidth, btnHeight);
+        btnRobotRect = new Rectangle(startX + (btnWidth + spacing) * 3, btnY, btnWidth, btnHeight);
     }
 
     @Override
@@ -99,25 +129,49 @@ public class JoueurScreen implements Screen {
                 }
                 break;
 
-            case GAME_OVER:
-                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                    // Recommencer
-                    game.setScreen(new DanseuseScreen(game));
-                }
-                if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-                    Gdx.app.exit();
-                }
-                break;
+//            case GAME_OVER:
+//                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+//                    game.setScreen(new DanseuseScreen(game));
+//                }
+//                if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+//                    game.setScreen(new MenuScreen(game));
+//                }
+//                // Détection clic souris pour les boutons de fin
+//                if (Gdx.input.justTouched()) {
+//                    int mouseX = Gdx.input.getX();
+//                    int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
+//
+//                    // Zone "Rejouer" (approximatif)
+//                    if (mouseY > 180 && mouseY < 220 && mouseX > 250 && mouseX < 450) {
+//                        game.setScreen(new DanseuseScreen(game));
+//                    }
+//                    // Zone "Menu" (approximatif)
+//                    if (mouseY > 140 && mouseY < 180 && mouseX > 240 && mouseX < 440) {
+//                        game.setScreen(new MenuScreen(game));
+//                    }
+//                }
+//                break;
 
-            case VICTOIRE:
-                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                    // Niveau suivant (séquence plus longue)
-                    game.setScreen(new DanseuseScreen(game));
-                }
-                if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-                    Gdx.app.exit();
-                }
-                break;
+//            case VICTOIRE:
+//                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+//                    game.setScreen(new DanseuseScreen(game));
+//                }
+//                if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+//                    game.setScreen(new MenuScreen(game));
+//                }
+//                // Détection clic pour victoire
+//                if (Gdx.input.justTouched()) {
+//                    int mouseX = Gdx.input.getX();
+//                    int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
+//
+//                    if (mouseY > 180 && mouseY < 220 && mouseX > 200 && mouseX < 500) {
+//                        game.setScreen(new DanseuseScreen(game));
+//                    }
+//                    if (mouseY > 140 && mouseY < 180 && mouseX > 240 && mouseX < 440) {
+//                        game.setScreen(new MenuScreen(game));
+//                    }
+//                }
+//                break;
         }
 
         // Dessin
@@ -137,23 +191,54 @@ public class JoueurScreen implements Screen {
             batch.draw(textureJoueur, 660, 180, 600, 440);
         }
 
+        // Boutons de danse (seulement si on attend l'input)
+        if (etatActuel == Etat.ATTENTE_INPUT) {
+            dessinerBoutons();
+        }
+
         // Interface texte
         afficherUI();
 
         batch.end();
     }
 
+    private void dessinerBoutons() {
+        // Dessiner les 4 boutons
+        batch.draw(btnFloss, btnFlossRect.x, btnFlossRect.y, btnFlossRect.width, btnFlossRect.height);
+        batch.draw(btnGangnam, btnGangnamRect.x, btnGangnamRect.y, btnGangnamRect.width, btnGangnamRect.height);
+        batch.draw(btnMacarena, btnMacarenaRect.x, btnMacarenaRect.y, btnMacarenaRect.width, btnMacarenaRect.height);
+        batch.draw(btnRobot, btnRobotRect.x, btnRobotRect.y, btnRobotRect.width, btnRobotRect.height);
+
+        // Labels des boutons
+        font.getData().setScale(1);
+        font.draw(batch, "Floss", btnFlossRect.x + 30, btnFlossRect.y - 5);
+        font.draw(batch, "Gangnam", btnGangnamRect.x + 10, btnGangnamRect.y - 5);
+        font.draw(batch, "Macarena", btnMacarenaRect.x + 5, btnMacarenaRect.y - 5);
+        font.draw(batch, "Robot", btnRobotRect.x + 30, btnRobotRect.y - 5);
+        font.getData().setScale(2);
+    }
+
     private void gererInput() {
-        int tentative = -1;
+        // Détection du clic
+        if (Gdx.input.justTouched()) {
+            int mouseX = Gdx.input.getX();
+            int mouseY = Gdx.graphics.getHeight() - Gdx.input.getY(); // Inverser Y
 
-        // Touches 1, 2, 3, 4
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) tentative = 0; // Floss
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) tentative = 1; // Gangnam
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) tentative = 2; // Macarena
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) tentative = 3; // Robot
+            int tentative = -1;
 
-        if (tentative != -1) {
-            verifierReponse(tentative);
+            if (btnFlossRect.contains(mouseX, mouseY)) {
+                tentative = 0;
+            } else if (btnGangnamRect.contains(mouseX, mouseY)) {
+                tentative = 1;
+            } else if (btnMacarenaRect.contains(mouseX, mouseY)) {
+                tentative = 2;
+            } else if (btnRobotRect.contains(mouseX, mouseY)) {
+                tentative = 3;
+            }
+
+            if (tentative != -1) {
+                verifierReponse(tentative);
+            }
         }
     }
 
@@ -162,22 +247,18 @@ public class JoueurScreen implements Screen {
         String[] noms = {"Floss", "Gangnam", "Macarena", "Robot"};
 
         if (tentative == bonneReponse) {
-            // Bonne réponse !
             System.out.println("✓ Correct ! " + noms[tentative] + " (" + (indexReponse + 1) + "/" + sequenceAReproduire.length + ")");
             score++;
             indexReponse++;
 
-            // Jouer l'animation
             tabJoueur[tentative].reset();
             etatActuel = Etat.JOUE_ANIMATION;
 
-            // Vérifier si séquence complète
             if (indexReponse >= sequenceAReproduire.length) {
                 etatActuel = Etat.VICTOIRE;
                 System.out.println("🎉 BRAVO ! Séquence réussie !");
             }
         } else {
-            // Mauvaise réponse
             System.out.println("✗ ERREUR ! Tu as fait " + noms[tentative] + " au lieu de " + noms[bonneReponse]);
             messageErreur = "ERREUR ! C'était " + noms[bonneReponse] + " !";
             etatActuel = Etat.GAME_OVER;
@@ -191,20 +272,18 @@ public class JoueurScreen implements Screen {
             case ATTENTE_INPUT:
                 font.draw(batch, "Mouvement " + (indexReponse + 1) + "/" + sequenceAReproduire.length, 10, 580);
                 font.draw(batch, "Score: " + score, 10, 540);
-                font.draw(batch, "1=Floss  2=Gangnam  3=Macarena  4=Robot", 10, 30);
 
-                // Afficher la séquence
-//                String seq = "Séquence: ";
-//                for (int i = 0; i < sequenceAReproduire.length; i++) {
-//                    if (i < indexReponse) {
-//                        seq += "✓ "; // Déjà fait
-//                    } else if (i == indexReponse) {
-//                        seq += "[" + noms[sequenceAReproduire[i]] + "] "; // En cours
-//                    } else {
-//                        seq += "? "; // À venir
-//                    }
-//                }
-//                font.draw(batch, seq, 10, 500);
+                String seq = "Séquence: ";
+                for (int i = 0; i < sequenceAReproduire.length; i++) {
+                    if (i < indexReponse) {
+                        seq += "✓ ";
+                    } else if (i == indexReponse) {
+                        seq += "[" + noms[sequenceAReproduire[i]] + "] ";
+                    } else {
+                        seq += "? ";
+                    }
+                }
+                font.draw(batch, seq, 10, 500);
                 break;
 
             case JOUE_ANIMATION:
@@ -217,7 +296,7 @@ public class JoueurScreen implements Screen {
                 font.draw(batch, messageErreur, 200, 350);
                 font.draw(batch, "Score: " + score + "/" + sequenceAReproduire.length, 280, 300);
                 font.draw(batch, "ENTER = Rejouer", 250, 200);
-                font.draw(batch, "ESCAPE = Quitter", 240, 160);
+                font.draw(batch, "ESCAPE = Menu", 250, 160);
                 break;
 
             case VICTOIRE:
@@ -225,7 +304,7 @@ public class JoueurScreen implements Screen {
                 font.draw(batch, "Séquence réussie !", 220, 350);
                 font.draw(batch, "Score: " + score + "/" + sequenceAReproduire.length, 280, 300);
                 font.draw(batch, "ENTER = Niveau suivant", 200, 200);
-                font.draw(batch, "ESCAPE = Quitter", 240, 160);
+                font.draw(batch, "ESCAPE = Menu", 240, 160);
                 break;
         }
     }
@@ -237,6 +316,10 @@ public class JoueurScreen implements Screen {
         textureGame.dispose();
         textureDanceuse.dispose();
         textureJoueur.dispose();
+        btnFloss.dispose();
+        btnGangnam.dispose();
+        btnMacarena.dispose();
+        btnRobot.dispose();
 
         for (Animator anim : tabJoueur) {
             if (anim != null) anim.dispose();
