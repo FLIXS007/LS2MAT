@@ -6,132 +6,173 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Random;
 
-/** First screen of the application. Displayed after the application is created. */
 public class DanseuseScreen implements Screen {
-    private Main game ;
-    private SpriteBatch batch ;
+    private Main game;
+    private SpriteBatch batch;
     private Texture textureGame;
-    private Texture textureJoueur ;
-    private Texture textureDanceuse ;
-    private Animator[] tabDanseuse;
-    private Animator[] tabJoueur;
-    private float tempsEcoule = 0 ;
-    private int[] RandomDancs ;
-    private int numdance;
-    private boolean pdance = false;
+    private Texture textureJoueur;
+    private Texture textureDanceuse;
 
-    public DanseuseScreen(Main game, int []RandomDancs){
-        this.game = game ;
+    private Animator[] tabDanseuse;
+
+    // Séquence aléatoire générée
+    private int[] sequenceDanses;
+    private int indexDanseActuelle = 0;
+    private int nombreDanses = 4; // Nombre de danses dans la séquence
+
+    // Timer
+    private float timerDanse = 0f;
+    private float DUREE_DANSE = 2.0f;
+    private float DUREE_PAUSE = 1.0f;
+
+    // États
+    private enum Etat { PAUSE, DANSE, TERMINE }
+    private Etat etatActuel = Etat.PAUSE;
+
+    private Random rand = new Random();
+
+    public DanseuseScreen(Main game) {
+        this.game = game;
         this.tabDanseuse = new Animator[4];
-        this.tabJoueur = new  Animator[4];
-        this.RandomDancs = RandomDancs;
-        this.numdance = 0;
+        this.sequenceDanses = new int[nombreDanses];
+
+        // Générer séquence aléatoire
+        genererSequenceAleatoire();
+
         importDance();
+
+        System.out.println("=== SÉQUENCE GÉNÉRÉE ===");
+        afficherSequence();
     }
 
-    private void importDance(){
+    private void genererSequenceAleatoire() {
+        for (int i = 0; i < nombreDanses; i++) {
+            sequenceDanses[i] = rand.nextInt(4); // 0 à 3
+        }
+    }
+
+    private void afficherSequence() {
+        String[] noms = {"Floss", "Gangnam", "Macarena", "Robot"};
+        System.out.print("Séquence : ");
+        for (int i = 0; i < sequenceDanses.length; i++) {
+            System.out.print(noms[sequenceDanses[i]]);
+            if (i < sequenceDanses.length - 1) System.out.print(" → ");
+        }
+        System.out.println();
+    }
+
+    private void importDance() {
         tabDanseuse[0] = new Animator("danseuse/floss.png");
         tabDanseuse[1] = new Animator("danseuse/gangnamStyle.png");
         tabDanseuse[2] = new Animator("danseuse/macarena.png");
         tabDanseuse[3] = new Animator("danseuse/robot.png");
-
-        tabJoueur[0] = new Animator("joueur/floss.png");
-       // tabJoueur[1] = new Animator("joueur/gangnamStyle.png");
-        tabJoueur[2] = new Animator("joueur/macarena.png");
-        tabJoueur[3] = new Animator("joueur/robot.png");
     }
 
-
+    public int[] getSequenceDanses() {
+        return sequenceDanses;
+    }
 
     @Override
     public void show() {
-        // Prepare your screen here
         batch = new SpriteBatch();
-
         textureGame = new Texture("maps/Map.png");
         textureDanceuse = new Texture("dance/danseuse/defaut.png");
         textureJoueur = new Texture("dance/joueur/defaut.png");
-
-
     }
 
     @Override
     public void render(float delta) {
-        // Draw your screen here. "delta" is the time since last render in seconds.
-        // Effacer l'écran (couleur noire)
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        tempsEcoule+=delta;
-        int dance = this.RandomDancs[numdance];
-        tabDanseuse[dance].update(delta);
+        // Incrémenter le timer
+        timerDanse += delta;
 
+        // Machine à états
+        switch (etatActuel) {
+            case PAUSE:
+                // Pause avant la danse
+                if (timerDanse >= DUREE_PAUSE) {
+                    etatActuel = Etat.DANSE;
+                    timerDanse = 0f;
 
-        if(tempsEcoule > 1f ){
-            pdance = true;
+                    // Réinitialiser l'animation
+                    int danse = sequenceDanses[indexDanseActuelle];
+                    tabDanseuse[danse].reset();
+
+                    String[] noms = {"Floss", "Gangnam", "Macarena", "Robot"};
+                    System.out.println("▶ Danse " + (indexDanseActuelle + 1) + "/" + nombreDanses + " : " + noms[danse]);
+                }
+                break;
+
+            case DANSE:
+                // Jouer la danse
+                int danse = sequenceDanses[indexDanseActuelle];
+                tabDanseuse[danse].update(delta);
+
+                if (timerDanse >= DUREE_DANSE) {
+                    indexDanseActuelle++;
+                    timerDanse = 0f;
+
+                    // Vérifier si on a fini
+                    if (indexDanseActuelle >= nombreDanses) {
+                        etatActuel = Etat.TERMINE;
+                        System.out.println("✓ Séquence terminée ! À toi de jouer !");
+
+                        // Aller au tour du joueur après 1 seconde
+                    } else {
+                        // Retour en pause pour la prochaine danse
+                        etatActuel = Etat.PAUSE;
+                    }
+                }
+                break;
+
+//            case TERMINE:
+//                // Attendre 1 seconde puis changer d'écran
+//                if (timerDanse >= 1.0f) {
+//                    game.setScreen(new JoueurScreen(game, sequenceDanses));
+//                }
+//                break;
         }
 
+        // Dessin
+        batch.begin();
 
-        if (pdance){
-            batch.begin();
-            // Afficher la map en arrière-plan (remplit tout l'écran)
-            batch.draw(textureGame, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            tabDanseuse[dance].draw(batch,250,200,100,300);
-            batch.draw(textureJoueur,220,80,200,200);
-            // Afficher les autres textures quand tu les auras
-            batch.end();
-        }
-        else {
-            batch.begin();
-            batch.draw(textureGame, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            batch.draw(textureDanceuse,250,300,130,130);
-            batch.draw(textureJoueur,220,80,200,200);
-            batch.end();
+        // Map
+        batch.draw(textureGame, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        // Danseuse
+        if (etatActuel == Etat.DANSE) {
+            // Animation
+            int danse = sequenceDanses[indexDanseActuelle];
+            tabDanseuse[danse].draw(batch, 250, 200, 100, 300);
+        } else {
+            // Pose d'attente
+            batch.draw(textureDanceuse, 250, 300, 130, 130);
         }
 
-        if(tempsEcoule%2 == 0 ){
-            this.numdance++;
-        }
+        // Joueur
+        batch.draw(textureJoueur, 220, 80, 200, 200);
 
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-        // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
-        if(width <= 0 || height <= 0) return;
-
-        // Resize your screen here. The parameters represent the new window size.
-    }
-
-    @Override
-    public void pause() {
-        // Invoked when your application is paused.
-    }
-
-    @Override
-    public void resume() {
-        // Invoked when your application is resumed after pause.
-    }
-
-    @Override
-    public void hide() {
-        // This method is called when another screen replaces this one.
+        batch.end();
     }
 
     @Override
     public void dispose() {
-        // Destroy screen's assets here
         batch.dispose();
         textureGame.dispose();
-        // Dispose toutes les animations
+        textureDanceuse.dispose();
+        textureJoueur.dispose();
+
         for (Animator anim : tabDanseuse) {
             if (anim != null) anim.dispose();
         }
-        for (Animator anim : tabJoueur) {
-            if (anim != null) anim.dispose();
-        }
     }
+
+    @Override public void resize(int w, int h) {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 }
