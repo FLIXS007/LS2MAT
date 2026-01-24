@@ -11,7 +11,6 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        randomD(randomDance);
-        setScreen(new DanseuseScreen(this, randomDance));
+        setScreen(new MenuScreen(this));
     }
 }
